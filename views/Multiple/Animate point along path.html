@@ -859,6 +859,10 @@
         [77.164694, 28.554792]
       ];
 
+      var popup;
+      var popupTemplate =
+        '<div class="customInfobox"><div class="name">{name}</div>{description}</div>';
+
       function GetMap() {
         //Initialize a map instance.
         map = new atlas.Map("myMap", {
@@ -915,6 +919,15 @@
             points[j++] = new atlas.data.Point(coor);
           });
 
+          var features = [];
+          j = 0;
+          points.forEach(point => {
+            features[j++] = new atlas.data.Feature(point, {
+              name: "Bus Stop",
+              description: `${point.coordinates[0]}, ${point.coordinates[1]}`
+            });
+          });
+
           //Create a data source and add it to the map.
           datasource = new atlas.source.DataSource();
           datasource2 = new atlas.source.DataSource();
@@ -956,7 +969,7 @@
           datasource5m.add(new atlas.data.LineString(path5m));
           datasource6m.add(new atlas.data.LineString(path6m));
 
-          points.forEach(point => {
+          features.forEach(point => {
             datasource.add(point);
           });
 
@@ -1033,40 +1046,79 @@
               strokeWidth: 2
             })
           );
-
           //Add a layer for rendering point data. This could be any layer that supports rendering point data.
-          map.layers.add(
-            new atlas.layer.SymbolLayer(datasource, null, {
-              iconOptions: {
-                image: "pin-round-darkblue",
-                size: 0.5,
-                offset: [0, 0],
-                pitchAlignment: "viewport"
-              },
+          var symbolLayer = new atlas.layer.SymbolLayer(datasource, null, {
+            iconOptions: {
+              image: "pin-round-darkblue",
+              size: 0.5,
+              offset: [0, 0],
+              pitchAlignment: "viewport"
+            },
 
-              //Only render Point or MultiPoints in this layer.
-              filter: [
-                "any",
-                ["==", ["geometry-type"], "Point"],
-                ["==", ["geometry-type"], "MultiPoint"]
-              ]
-            })
-          );
-          map.events.add("click", function() {
-            //Stop any previously running animations.
-            if (animation) {
-              animation.stop();
+            //Only render Point or MultiPoints in this layer.
+            filter: [
+              "any",
+              ["==", ["geometry-type"], "Point"],
+              ["==", ["geometry-type"], "MultiPoint"]
+            ]
+          });
+          map.layers.add(symbolLayer);
+          popup = new atlas.Popup({
+            pixelOffset: [0, -18]
+          });
+          map.events.add("click", symbolLayer, symbolClicked);
+        });
+      }
+
+      function symbolClicked(e) {
+        //Make sure the event occured on a point feature.
+        if (e.shapes && e.shapes.length > 0) {
+          var content, coordinate;
+
+          //Check to see if the first value in the shapes array is a Point Shape.
+          if (
+            e.shapes[0] instanceof atlas.Shape &&
+            e.shapes[0].getType() === "Point"
+          ) {
+            var properties = e.shapes[0].getProperties();
+            content = popupTemplate
+              .replace(/{name}/g, properties.name)
+              .replace(/{description}/g, properties.description);
+            coordinate = e.shapes[0].getCoordinates();
+          } else if (
+            e.shapes[0].type === "Feature" &&
+            e.shapes[0].geometry.type === "Point"
+          ) {
+            //Check to see if the feature is a cluster.
+            if (e.shapes[0].properties.cluster) {
+              content =
+                '<div style="padding:10px;">Cluster of ' +
+                e.shapes[0].properties.point_count +
+                " symbols</div>";
+            } else {
+              //Feature is likely from a VectorTileSource.
+              content = popupTemplate
+                .replace(/{name}/g, properties.name)
+                .replace(/{description}/g, properties.description);
             }
 
-            animation = atlas.animations.moveAlongPath(point, path, {
-              duration: 2000,
-              type: "snakeline",
-              loop: true,
-              captureMetadata: true,
-              autoPlay: true
+            coordinate = e.shapes[0].geometry.coordinates;
+          }
+
+          if (content && coordinate) {
+            //Populate the popupTemplate with data from the clicked point feature.
+            popup.setOptions({
+              //Update the content of the popup.
+              content: content,
+
+              //Update the position of the popup with the symbols coordinate.
+              position: coordinate
             });
-          });
-        });
+
+            //Open the popup.
+            popup.open(map);
+          }
+        }
       }
     </script>
   </head>
