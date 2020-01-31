@@ -875,37 +875,6 @@
 
         //Wait until the map resources are ready.
         map.events.add("ready", function() {
-          // point = new atlas.Shape(new atlas.data.Point([-122.33825, 47.53945]));
-          //
-          //
-          //
-          //
-          //HERE
-          // point = new atlas.Shape(new atlas.data.Point(path1[0]));
-          // point11 = new atlas.Shape(
-          //   new atlas.data.Point(path1[path1.length - 1])
-          // );
-          // point2 = new atlas.Shape(new atlas.data.Point(path2[0]));
-          // point22 = new atlas.Shape(
-          //   new atlas.data.Point(path2[path2.length - 1])
-          // );
-          // point3 = new atlas.Shape(new atlas.data.Point(path3[0]));
-          // point33 = new atlas.Shape(
-          //   new atlas.data.Point(path3[path3.length - 1])
-          // );
-          // point4 = new atlas.Shape(new atlas.data.Point(path4[0]));
-          // point44 = new atlas.Shape(
-          //   new atlas.data.Point(path4[path4.length - 1])
-          // );
-          // point5 = new atlas.Shape(new atlas.data.Point(path5[0]));
-          // point55 = new atlas.Shape(
-          //   new atlas.data.Point(path5[path5.length - 1])
-          // );
-          // point6 = new atlas.Shape(new atlas.data.Point(path6[0]));
-          // point66 = new atlas.Shape(
-          //   new atlas.data.Point(path6[path6.length - 1])
-          // );
-
           let j = 0;
           let points = [];
           path1.forEach(coor => {
@@ -986,20 +955,6 @@
           datasource4m.add(new atlas.data.LineString(path4m));
           datasource5m.add(new atlas.data.LineString(path5m));
           datasource6m.add(new atlas.data.LineString(path6m));
-
-          //Add the data to the data source.
-          // datasource.add(point);
-          // datasource.add(point11);
-          // datasource.add(point2);
-          // datasource.add(point22);
-          // datasource.add(point3);
-          // datasource.add(point33);
-          // datasource.add(point4);
-          // datasource.add(point44);
-          // datasource.add(point5);
-          // datasource.add(point55);
-          // datasource.add(point6);
-          // datasource.add(point66);
 
           points.forEach(point => {
             datasource.add(point);
