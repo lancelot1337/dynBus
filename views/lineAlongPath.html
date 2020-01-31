@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Animate point along path - Azure Maps Web SDK Samples</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="IE=Edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="description"
+      content="This sample shows how to animate a point along a path on the map."
+    />
+    <meta
+      name="keywords"
+      content="Microsoft maps, map, gis, API, SDK, animation, animate, point"
+    />
+    <meta name="author" content="Microsoft Azure Maps" />
+
+    <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
+    <link
+      rel="stylesheet"
+      href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css"
+      type="text/css"
+    />
+    <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+
+    <!-- Load in the JavaScript that has our custom module. -->
+    <script src="AnimationModule.js"></script>
+
+    <script type="text/javascript">
+      var map, point, animation;
+
+      //Create an array of points to define a path to animate along.
+      var path1 = [
+        [77.296058, 28.558951],
+        [77.294667, 28.561466999999997],
+        [77.29185, 28.562333000000002],
+        [77.285799, 28.562084999999996],
+        [77.281183, 28.560917],
+        [77.2798, 28.5609],
+        [77.275467, 28.56095],
+        [77.2723, 28.5619],
+        [77.269583, 28.5666],
+        [77.2624, 28.5667],
+        [77.259017, 28.571233000000003],
+        [77.25683599999999, 28.574146000000002],
+        [77.2511, 28.5828],
+        [77.249617, 28.58465],
+        [77.2463, 28.589233],
+        [77.244633, 28.591666999999998],
+        [77.237883, 28.601367],
+        [77.2371, 28.60575],
+        [77.23995, 28.6084],
+        [77.23845, 28.6093],
+        [77.228557, 28.617221],
+        [77.2258, 28.6219],
+        [77.2251, 28.6232],
+        [77.2219, 28.6287],
+        [77.2183, 28.6367],
+        [77.218517, 28.6415],
+        [77.2135, 28.6449],
+        [77.20809399999999, 28.646001000000002],
+        [77.204083, 28.646833],
+        [77.2009, 28.648000000000003],
+        [77.199017, 28.648266999999997],
+        [77.192833, 28.644583],
+        [77.18874699999999, 28.643911],
+        [77.1733, 28.6423],
+        [77.1683, 28.6453],
+        [77.164974, 28.647503999999998],
+        [77.1585, 28.6512],
+        [77.1555, 28.653116999999998],
+        [77.1485, 28.657317],
+        [77.147367, 28.660583000000003],
+        [77.144044, 28.660241]
+      ];
+      var path2 = [
+        [76.99985, 28.61375],
+        [77.0034, 28.614666999999997],
+        [77.028577, 28.619346999999998],
+        [77.0314, 28.6191],
+        [77.03348299999999, 28.613083000000003],
+        [77.035067, 28.608217],
+        [77.03635, 28.605733],
+        [77.039, 28.604],
+        [77.04115, 28.602717],
+        [77.046233, 28.60465],
+        [77.05238299999999, 28.605083],
+        [77.05483000000001, 28.60428],
+        [77.0614, 28.599883000000002],
+        [77.0654, 28.597267],
+        [77.06921700000001, 28.595933000000002],
+        [77.07351700000001, 28.5945],
+        [77.0813, 28.592067],
+        [77.08635, 28.58931667],
+        [77.096017, 28.581483000000002],
+        [77.101783, 28.579683000000003],
+        [77.108783, 28.577583],
+        [77.116967, 28.57535],
+        [77.123533, 28.56955],
+        [77.1326, 28.5695],
+        [77.141583, 28.574833],
+        [77.147183, 28.575266999999997],
+        [77.151517, 28.574316999999997],
+        [77.160167, 28.574966999999997],
+        [77.164833, 28.568467],
+        [77.16825, 28.563033],
+        [77.172067, 28.558916999999997],
+        [77.1746, 28.557],
+        [77.17671700000001, 28.555517],
+        [77.181, 28.552767],
+        [77.185633, 28.550033000000003],
+        [77.1897, 28.5483],
+        [77.197, 28.546],
+        [77.2052, 28.5439],
+        [77.216433, 28.542983000000003],
+        [77.2189, 28.5428],
+        [77.2248, 28.5423],
+        [77.2308, 28.541999999999998],
+        [77.236067, 28.54085],
+        [77.23855, 28.54175],
+        [77.2415, 28.542817],
+        [77.2438, 28.5437],
+        [77.2552, 28.5481]
+      ];
+      var path3 = [
+        [77.135633, 28.667383],
+        [77.13113299999999, 28.663517],
+        [77.128633, 28.658433000000002],
+        [77.125417, 28.654783000000002],
+        [77.127, 28.6457],
+        [77.12988299999999, 28.638567],
+        [77.134183, 28.627516999999997],
+        [77.13675, 28.618133],
+        [77.13735, 28.612917],
+        [77.141767, 28.607383000000002],
+        [77.14743333, 28.60536667],
+        [77.162017, 28.60005],
+        [77.1704594, 28.588045500000003],
+        [77.17276700000001, 28.584567],
+        [77.174283, 28.58195],
+        [77.175, 28.578000000000003],
+        [77.1724, 28.5757],
+        [77.1737, 28.5736],
+        [77.173167, 28.5702],
+        [77.1762, 28.5668],
+        [77.1783, 28.5647],
+        [77.1783, 28.563000000000002],
+        [77.1763, 28.56125],
+        [77.17371700000001, 28.5585],
+        [77.1746, 28.557],
+        [77.17671700000001, 28.555517],
+        [77.181, 28.552767],
+        [77.185633, 28.550033000000003],
+        [77.1897, 28.5483],
+        [77.197, 28.546],
+        [77.2052, 28.5439],
+        [77.209567, 28.5428],
+        [77.209583, 28.536666999999998],
+        [77.2097, 28.5365],
+        [77.2046, 28.5326],
+        [77.19963299999999, 28.530316999999997],
+        [77.2014, 28.529417],
+        [77.205, 28.528000000000002],
+        [77.2091, 28.5282],
+        [77.2119, 28.5285],
+        [77.2158, 28.5297],
+        [77.21835, 28.530183],
+        [77.223883, 28.53145],
+        [77.22695, 28.532283000000003],
+        [77.23066700000001, 28.53305],
+        [77.231317, 28.527866999999997],
+        [77.230317, 28.5247],
+        [77.22728000000001, 28.515588],
+        [77.2284, 28.515266999999998],
+        [77.2344, 28.514],
+        [77.2389, 28.5129],
+        [77.2433, 28.5124],
+        [77.248667, 28.512166999999998]
+      ];
+      var path4 = [
+        [77.3178, 28.6483],
+        [77.317879, 28.646959999999996],
+        [77.316583, 28.643266999999998],
+        [77.310567, 28.636133],
+        [77.306815, 28.635993],
+        [77.306917, 28.62985],
+        [77.309017, 28.6289],
+        [77.3091, 28.626417],
+        [77.3057, 28.6253],
+        [77.30148299999999, 28.623866999999997],
+        [77.2983, 28.62285],
+        [77.29508299999999, 28.621767],
+        [77.29005, 28.6199],
+        [77.286067, 28.619266999999997],
+        [77.285167, 28.62085],
+        [77.27946700000001, 28.6271],
+        [77.27735, 28.629233000000003],
+        [77.26095, 28.628017],
+        [77.25235, 28.62795],
+        [77.24335, 28.627883],
+        [77.2387, 28.6253],
+        [77.233933, 28.625566999999997],
+        [77.2215, 28.621],
+        [77.213617, 28.6169],
+        [77.210453, 28.618035],
+        [77.2098, 28.62065],
+        [77.2073, 28.6209],
+        [77.205283, 28.621017],
+        [77.2031, 28.6222],
+        [77.19665, 28.62246667],
+        [77.19461700000001, 28.621483],
+        [77.1908, 28.611],
+        [77.1891, 28.6078],
+        [77.1845, 28.603917],
+        [77.1785, 28.600783000000003],
+        [77.1758, 28.5994],
+        [77.1713, 28.596999999999998],
+        [77.163492, 28.592721],
+        [77.158433, 28.592867],
+        [77.150933, 28.5958],
+        [77.14546667, 28.59656667],
+        [77.14065, 28.59655],
+        [77.1358, 28.5965],
+        [77.1287, 28.5978],
+        [77.1249, 28.59995],
+        [77.126367, 28.60535],
+        [77.123233, 28.606633000000002],
+        [77.1138, 28.6104],
+        [77.1094, 28.6119],
+        [77.10395, 28.60785],
+        [77.0996, 28.6091],
+        [77.095047, 28.609871000000002],
+        [77.092159, 28.610881],
+        [77.090236, 28.611729999999998],
+        [77.085675, 28.613715999999997],
+        [77.081582, 28.615740000000002],
+        [77.0785, 28.6172],
+        [77.0771, 28.6178],
+        [77.0736, 28.6195],
+        [77.07, 28.6213],
+        [77.067867, 28.624233],
+        [77.066948, 28.625328999999997]
+      ];
+      var path5 = [
+        [77.22373542, 28.641949699999998],
+        [77.224176, 28.638734999999997],
+        [77.22305, 28.632583],
+        [77.214431, 28.625607000000002],
+        [77.211, 28.6243],
+        [77.209333, 28.625333],
+        [77.2065, 28.6235],
+        [77.2064, 28.6214],
+        [77.205283, 28.621017],
+        [77.2031, 28.6222],
+        [77.19665, 28.62246667],
+        [77.19461700000001, 28.621483],
+        [77.1908, 28.611],
+        [77.1891, 28.6078],
+        [77.1845, 28.603917],
+        [77.1785, 28.600783000000003],
+        [77.1758, 28.5994],
+        [77.1713, 28.596999999999998],
+        [77.16315, 28.598667],
+        [77.155433, 28.60385],
+        [77.14680200000001, 28.605202000000002],
+        [77.14095177, 28.60732632],
+        [77.133483, 28.60265],
+        [77.126367, 28.60535],
+        [77.123233, 28.606633000000002],
+        [77.1138, 28.6104],
+        [77.1094, 28.6119],
+        [77.1039, 28.6078],
+        [77.0996, 28.6091],
+        [77.095047, 28.609871000000002],
+        [77.092159, 28.610881],
+        [77.086033, 28.61195],
+        [77.0808, 28.6093],
+        [77.07826700000001, 28.607483000000002],
+        [77.0755, 28.6062],
+        [77.070983, 28.603367],
+        [77.071483, 28.600333000000003],
+        [77.0722, 28.5964],
+        [77.073583, 28.594483],
+        [77.0813, 28.592067],
+        [77.086907, 28.590099]
+      ];
+      var path6 = [
+        [77.331117, 28.685416999999998],
+        [77.33155, 28.682567],
+        [77.327867, 28.680816999999998],
+        [77.324533, 28.679333000000003],
+        [77.323483, 28.677683000000002],
+        [77.32123299999999, 28.676167],
+        [77.3174, 28.6761],
+        [77.3118, 28.675883000000002],
+        [77.309217, 28.675817],
+        [77.300119, 28.675479],
+        [77.2898, 28.6749],
+        [77.282696, 28.673070000000003],
+        [77.2809, 28.6704],
+        [77.28225, 28.66785],
+        [77.283917, 28.666166999999998],
+        [77.285933, 28.6636],
+        [77.2878, 28.660999999999998],
+        [77.29, 28.6582],
+        [77.2915, 28.6564],
+        [77.2925, 28.654],
+        [77.293083, 28.651833],
+        [77.295529, 28.648035999999998],
+        [77.29725, 28.642867],
+        [77.29625, 28.64215],
+        [77.292417, 28.639333],
+        [77.287683, 28.636783],
+        [77.28495, 28.635367],
+        [77.282067, 28.633516999999998],
+        [77.2789, 28.6313],
+        [77.26095, 28.628017],
+        [77.25235, 28.62795],
+        [77.24335, 28.627883],
+        [77.2393, 28.6237],
+        [77.236333, 28.61975],
+        [77.2339, 28.6164],
+        [77.2347, 28.6136],
+        [77.227917, 28.608466999999997],
+        [77.2272, 28.603333000000003],
+        [77.22945, 28.601017],
+        [77.228717, 28.596683000000002],
+        [77.228983, 28.592183000000002],
+        [77.2295, 28.5873],
+        [77.2301, 28.5841],
+        [77.22953299999999, 28.57875],
+        [77.22766700000001, 28.571983000000003],
+        [77.22655, 28.569816999999997],
+        [77.216767, 28.568766999999998],
+        [77.22315, 28.568367],
+        [77.213433, 28.568983000000003],
+        [77.20451700000001, 28.569483],
+        [77.19505699999999, 28.569294],
+        [77.191283, 28.569183000000002],
+        [77.1896, 28.568],
+        [77.18915, 28.564916999999998],
+        [77.1885, 28.5616],
+        [77.1845, 28.5567],
+        [77.1807, 28.5618],
+        [77.178467, 28.562933],
+        [77.1763, 28.56125],
+        [77.17371700000001, 28.5585],
+        [77.17215, 28.558333],
+        [77.164417, 28.56035],
+        [77.1611, 28.560416999999998],
+        [77.157317, 28.559966999999997],
+        [77.158117, 28.5587],
+        [77.164694, 28.554792]
+      ];
+      function GetMap() {
+        //Initialize a map instance.
+        map = new atlas.Map("myMap", {
+          center: [77.2371, 28.60575],
+          zoom: 11,
+          view: "Auto",
+
+          //Add your Azure Maps subscription key to the map SDK. Get an Azure Maps key at https://azure.com/maps
+          authOptions: {
+            authType: "subscriptionKey",
+            subscriptionKey: "xWdpS2vN3hqyeapGT_CoH8emMYLWpZej_xaDK4CZIug"
+          }
+        });
+
+        //Wait until the map resources are ready.
+        map.events.add("ready", function() {
+          point1 = new atlas.Shape(
+            new atlas.data.Point([77.296058, 28.558951])
+          );
+          point2 = new atlas.Shape(new atlas.data.Point([76.99985, 28.61375]));
+          point3 = new atlas.Shape(
+            new atlas.data.Point([77.135633, 28.667383])
+          );
+          point4 = new atlas.Shape(new atlas.data.Point([77.3178, 28.6483]));
+          point5 = new atlas.Shape(
+            new atlas.data.Point([77.22373542, 28.641949699999998])
+          );
+          point6 = new atlas.Shape(
+            new atlas.data.Point([77.331117, 28.685416999999998])
+          );
+
+          //Create a data source and add it to the map.
+          datasource = new atlas.source.DataSource();
+          map.sources.add(datasource);
+
+          //Add a line for the path as a visual reference.
+          datasource.add(new atlas.data.LineString(path1));
+          datasource.add(new atlas.data.LineString(path2));
+          datasource.add(new atlas.data.LineString(path3));
+          datasource.add(new atlas.data.LineString(path4));
+          datasource.add(new atlas.data.LineString(path5));
+          datasource.add(new atlas.data.LineString(path6));
+
+          //Add the data to the data source.
+          datasource.add(point1);
+          datasource.add(point2);
+          datasource.add(point3);
+          datasource.add(point4);
+          datasource.add(point5);
+          datasource.add(point6);
+
+          //Add a layer for rendering line data.
+          map.layers.add(new atlas.layer.LineLayer(datasource));
+          //   map.layers.add(new atlas.layer.LineLayer(datasource));
+          //   map.layers.add(new atlas.layer.LineLayer(datasource));
+          //   map.layers.add(new atlas.layer.LineLayer(datasource));
+          //   map.layers.add(new atlas.layer.LineLayer(datasource));
+          //   map.layers.add(new atlas.layer.LineLayer(datasource));
+
+          //Add a layer for rendering point data. This could be any layer that supports rendering point data.
+          map.layers.add(
+            new atlas.layer.SymbolLayer(datasource, null, {
+              iconOptions: {
+                //For smoother animation, ignore the placement of the icon. This skips the label collision calculations and allows the icon to overlap map labels.
+                ignorePlacement: true,
+
+                //For smoother animation, allow symbol to overlap all other symbols on the map.
+                allowOverlap: true,
+                rotation: ["get", "_heading"]
+              },
+
+              //Only render Point or MultiPoints in this layer.
+              filter: [
+                "any",
+                ["==", ["geometry-type"], "Point"],
+                ["==", ["geometry-type"], "MultiPoint"]
+              ]
+            })
+          );
+          //   map.layers.add(
+          //     new atlas.layer.SymbolLayer(datasource2, null, {
+          //       iconOptions: {
+          //         //For smoother animation, ignore the placement of the icon. This skips the label collision calculations and allows the icon to overlap map labels.
+          //         ignorePlacement: true,
+
+          //         //For smoother animation, allow symbol to overlap all other symbols on the map.
+          //         allowOverlap: true,
+          //         rotation: ["get", "_heading"]
+          //       },
+
+          //       //Only render Point or MultiPoints in this layer.
+          //       filter: [
+          //         "any",
+          //         ["==", ["geometry-type"], "Point"],
+          //         ["==", ["geometry-type"], "MultiPoint"]
+          //       ]
+          //     })
+          //   );
+          //   map.layers.add(
+          //     new atlas.layer.SymbolLayer(datasource3, null, {
+          //       iconOptions: {
+          //         //For smoother animation, ignore the placement of the icon. This skips the label collision calculations and allows the icon to overlap map labels.
+          //         ignorePlacement: true,
+
+          //         //For smoother animation, allow symbol to overlap all other symbols on the map.
+          //         allowOverlap: true,
+          //         rotation: ["get", "_heading"]
+          //       },
+
+          //       //Only render Point or MultiPoints in this layer.
+          //       filter: [
+          //         "any",
+          //         ["==", ["geometry-type"], "Point"],
+          //         ["==", ["geometry-type"], "MultiPoint"]
+          //       ]
+          //     })
+          //   );
+          //   map.layers.add(
+          //     new atlas.layer.SymbolLayer(datasource4, null, {
+          //       iconOptions: {
+          //         //For smoother animation, ignore the placement of the icon. This skips the label collision calculations and allows the icon to overlap map labels.
+          //         ignorePlacement: true,
+
+          //         //For smoother animation, allow symbol to overlap all other symbols on the map.
+          //         allowOverlap: true,
+          //         rotation: ["get", "_heading"]
+          //       },
+
+          //       //Only render Point or MultiPoints in this layer.
+          //       filter: [
+          //         "any",
+          //         ["==", ["geometry-type"], "Point"],
+          //         ["==", ["geometry-type"], "MultiPoint"]
+          //       ]
+          //     })
+          //   );
+          //   map.layers.add(
+          //     new atlas.layer.SymbolLayer(datasource5, null, {
+          //       iconOptions: {
+          //         //For smoother animation, ignore the placement of the icon. This skips the label collision calculations and allows the icon to overlap map labels.
+          //         ignorePlacement: true,
+
+          //         //For smoother animation, allow symbol to overlap all other symbols on the map.
+          //         allowOverlap: true,
+          //         rotation: ["get", "_heading"]
+          //       },
+
+          //       //Only render Point or MultiPoints in this layer.
+          //       filter: [
+          //         "any",
+          //         ["==", ["geometry-type"], "Point"],
+          //         ["==", ["geometry-type"], "MultiPoint"]
+          //       ]
+          //     })
+          //   );
+          //   map.layers.add(
+          //     new atlas.layer.SymbolLayer(datasource6, null, {
+          //       iconOptions: {
+          //         //For smoother animation, ignore the placement of the icon. This skips the label collision calculations and allows the icon to overlap map labels.
+          //         ignorePlacement: true,
+
+          //         //For smoother animation, allow symbol to overlap all other symbols on the map.
+          //         allowOverlap: true,
+          //         rotation: ["get", "_heading"]
+          //       },
+
+          //       //Only render Point or MultiPoints in this layer.
+          //       filter: [
+          //         "any",
+          //         ["==", ["geometry-type"], "Point"],
+          //         ["==", ["geometry-type"], "MultiPoint"]
+          //       ]
+          //     })
+          //   );
+
+          map.events.add("click", function() {
+            //Stop any previously running animations.
+            if (animation) {
+              animation.stop();
+            }
+
+            animation = atlas.animations.moveAlongPath(point1, path1, {
+              duration: 4000,
+              type: "snakeline",
+              loop: true,
+              captureMetadata: true,
+              autoPlay: true
+            });
+          });
+        });
+
+        map.events.add("ready", function() {
+          point = new atlas.Shape(new atlas.data.Point([-122.33825, 47.53945]));
+
+          //Create a data source and add it to the map.
+          datasource = new atlas.source.DataSource();
+          map.sources.add(datasource);
+
+          //Add a line for the path as a visual reference.
+          datasource.add(new atlas.data.LineString(path));
+
+          //Add the data to the data source.
+          datasource.add(point);
+
+          //Add a layer for rendering line data.
+          map.layers.add(new atlas.layer.LineLayer(datasource));
+
+          //Add a layer for rendering point data. This could be any layer that supports rendering point data.
+          map.layers.add(
+            new atlas.layer.SymbolLayer(datasource, null, {
+              iconOptions: {
+                //For smoother animation, ignore the placement of the icon. This skips the label collision calculations and allows the icon to overlap map labels.
+                ignorePlacement: true,
+
+                //For smoother animation, allow symbol to overlap all other symbols on the map.
+                allowOverlap: true,
+                rotation: ["get", "_heading"]
+              },
+
+              //Only render Point or MultiPoints in this layer.
+              filter: [
+                "any",
+                ["==", ["geometry-type"], "Point"],
+                ["==", ["geometry-type"], "MultiPoint"]
+              ]
+            })
+          );
+
+          map.events.add("click", function() {
+            //Stop any previously running animations.
+            if (animation) {
+              animation.stop();
+            }
+
+            animation = atlas.animations.moveAlongPath(point, path, {
+              duration: 2000,
+              type: "snakeline",
+              loop: true,
+              captureMetadata: true,
+              autoPlay: true
+            });
+          });
+        });
+      }
+    </script>
+  </head>
+  <body onload="GetMap()">
+    <div
+      id="myMap"
+      style="position:relative;width:100%;min-width:290px;height:600px;"
+    ></div>
+
+    <div
+      style="position:absolute;top:0px;left:calc(50% - 100px);background-color:white;padding:5px;"
+    >
+      Click the map to animate point.
+    </div>
+  </body>
+</html>
