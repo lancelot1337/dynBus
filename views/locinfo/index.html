@@ -1,0 +1,168 @@
+<html>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .popup-content {
+      padding: 10px;
+    }
+  </style>
+  <link
+    rel="stylesheet"
+    href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css"
+    type="text/css"
+  />
+  <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+  <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
+
+  <body>
+    <div id="map"></div>
+  </body>
+  <script>
+          //URL to fetch Access token
+
+    var url = 'https://adtokens.azurewebsites.net/api/HttpTrigger1?code=dv9Xz4tZQthdufbocOV9RLaaUhQoegXQJSeQQckm6DZyG/1ymppSoQ==';
+
+    ​
+
+    // Create a new map
+
+    var map = new atlas.Map("map", {
+
+      center: [-122.335167, 47.608013],
+
+      zoom: 12,
+
+      view: "Auto",
+
+      //Add your Azure Maps subscription client ID to the map SDK. Get an Azure Maps client ID at https://azure.com/maps
+
+        authOptions: {
+
+            authType: "anonymous",
+
+            clientId: "35267128-0f1e-41de-aa97-f7a7ec8c2dbd",
+
+            getToken: function(resolve, reject, map) {
+
+                fetch(url).then(function(response) {
+
+                    return response.text();
+
+                }).then(function(token) {
+
+                    resolve(token);
+
+                });
+
+            }
+
+        }
+
+    ​
+
+    });
+
+    ​
+
+    //Use TokenCredential with Token
+
+    var tokenCredential = new atlas.service.TokenCredential("35267128-0f1e-41de-aa97-f7a7ec8c2dbd", map.authentication.getToken());
+
+    ​
+
+    // Use subscriptionKeyCredential to create a pipeline
+
+    var pipeline = atlas.service.MapsURL.newPipeline(tokenCredential);
+
+    ​
+
+    // Construct the SearchURL object
+
+    var searchURL = new atlas.service.SearchURL(pipeline);
+
+    ​
+
+    map.events.add("load", function(e){
+
+    ​
+
+      /* Update the style of mouse cursor to a pointer */
+
+      map.getCanvasContainer().style.cursor = "pointer";
+
+    ​
+
+      /* Create a popup */
+
+      var popup = new atlas.Popup();
+
+    ​
+
+      /* Upon a mouse click, open a popup at the clicked location and render in the popup the address of the clicked location*/
+
+      map.events.add("click", function(e){
+
+        var position = [e.position[0], e.position[1]];
+
+    ​
+
+        /* Execute the reverse address search query and open a popup once a response is received */
+
+        searchURL.searchAddressReverse(atlas.service.Aborter.timeout(10000), position, {
+
+          allowFreeformNewline: true
+
+        }).then((addresses) => {
+
+          //Get data features from response
+
+          var data = addresses.geojson.getFeatures();
+
+    ​
+
+          // Construct the popup
+
+          var popupContent = document.createElement("div");
+
+          popupContent.classList.add("popup-content");
+
+          popupContent.innerHTML =
+
+            data.length !== 0
+
+            ? data.features[0].properties.address.freeformAddress
+
+          : "No address for that location!";
+
+          popup.setPopupOptions({
+
+            position: e.position,
+
+            content: popupContent
+
+          });
+
+    ​
+
+          // Render the popup on the map
+
+          popup.open(map);
+
+        });
+
+      });
+
+    });
+  </script>
+</html>
